@@ -13,16 +13,18 @@ protected:
 		switch (function) {
 		case 1:
 			for (int i = 0; i < k.length(); i++)
-				pos += k[i];
+				pos += abs(k[i]);
 			pos = ((pos * _a1 + _b1) % _p) % maxsize;
-		
+			break;
 		case 2:
 			for (int i = 0; i < k.length(); i++) {
-				pos += k[i];
+				pos += abs(k[i]);
 			pos = ((pos * _a2 + _b2) % _p) % maxsize;
 			}
-		return pos;
+		
 		}
+
+		return pos;
 	}
 };
 
@@ -36,6 +38,10 @@ protected:
 	int num_of_rehash;
 	string **arr;
 	int pos[2];
+
+
+
+
 public:
 	TArrayHash(int size = 500) {
 		srand(time(NULL));
@@ -152,12 +158,22 @@ public:
 
 	bool Place(string tr, int cnt, int n) {
 		bool flag;
-		if (cnt == n) {
+		
+		
+		
+		if (cnt == n) { // ??????????????
 			cout << "Cycle present. Rehash. \n";
-			//rehash();
+			rehash();
 			num_of_rehash++;
 			return false;
 		}
+
+
+
+
+
+
+
 		pos[0] = (this->HashFunc(1, tr, maxsize, a1, b1, a2, b2, p));
 		pos[1] = (this->HashFunc(2, tr, maxsize, a1, b1, a2, b2, p));
 
@@ -228,7 +244,9 @@ public:
 		cout << "--------------TABLE 1----------------TABLE2------------" << '\n';
 		for (int i = 0; i < maxsize; i++) {
 			string tmp = GetValueInFirstTable(i);
-			cout << i  << '\t' << GetString(arr[0][i]) << '\t' << GetString(arr[1][i]) << '\n';
+			//cout << i  << '\t' << GetString(arr[0][i]) << '\t' << GetString(arr[1][i]) << '\n';
+			cout << i << '\t' << GetString(arr[0][i]) << '\t' << GetString(arr[1][i]) << '\n';
+			//cout << "Ëîë";
 		}
  		cout << "--------------------------------------------------------";
 	}
