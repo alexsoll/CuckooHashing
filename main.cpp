@@ -97,7 +97,7 @@ string randomStrGen(int length, std::normal_distribution<> &uid, std::mt19937 &g
 
 
 
-int main()
+/*int main_2()
 {
 	srand(time(NULL));
 
@@ -188,5 +188,31 @@ int main()
 
 
 
+	return 0;
+}*/
+
+int main() {
+	static string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+	std::mt19937 gen(time(0));
+	std::normal_distribution<> dist(30, 7);
+	string result;
+	result.resize(4);
+
+	TArrayHash *hs;
+	int size = 400;
+	int num_of_data = 100;
+	hs = new TArrayHash(2,size);
+	string *t;
+	t = new string[num_of_data];
+	int n = floor(3 * log(size));
+	for (int i = 0; i < num_of_data; i++) {
+		t[i] = randomStrGen(20, dist, gen);
+	}
+	Cuckoo(t,num_of_data,n, hs);
+	int rehash = hs->GetNumOfRehash();
+	cout << "Number of rehash is " << rehash << " " << '\n';
+	hs->printHash();
+
+	
 	return 0;
 }

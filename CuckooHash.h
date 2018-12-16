@@ -8,10 +8,11 @@ using namespace std;
 
 class THashTable{
 protected:
-	int HashFunc(int function, string k, int maxsize, int _a1, int _b1, int _a2, int _b2, int _p) {
+	int HashFunc(int function, string st, int maxsize, int* &k_indep1, int* &k_indep2, int _p, int k) {
 		int pos = 0;
+	    double res = 0.0;
 		switch (function) {
-		case 1:
+		/*case 1:
 			for (int i = 0; i < k.length(); i++)
 				pos += abs(k[i]);
 			pos = ((pos * _a1 + _b1) % _p) % maxsize;
@@ -21,14 +22,30 @@ protected:
 				pos += abs(k[i]);
 			pos = ((pos * _a2 + _b2) % _p) % maxsize;
 			}
-		
-		}
 
-		return pos;
+		*/
+		case 1:
+			for (int i = 0; i < st.length(); i++)
+				pos += abs(st[i]);
+			for (int i = 0; i < k; i++) {
+				res += k_indep1[i] * pow(double(pos), double(k - i - 1));
+			}
+ 			res = fmod(fmod(res , double(_p)), double(maxsize) );
+			break;
+		case 2:
+			for (int i = 0; i < st.length(); i++)
+				pos += abs(st[i]);
+			for (int i = 0; i < k; i++) {
+				res += k_indep2[i] * pow(double(pos), double(k - i - 1));
+			}
+			res = fmod(fmod(res, double(_p)), double(maxsize));
+			break;
+		}
+		return res;
 	}
 };
 
-
+ 
 //---------------------------------------------------------------------------------------------------------//
 
 
@@ -37,30 +54,41 @@ protected:
 	int maxsize, curr, DataCount, a1, b1, p, a2, b2;
 	int num_of_rehash;
 	string **arr;
+	int k;
+	int *k_indep_hash_func1, *k_indep_hash_func2;
 	int pos[2];
 
 
 
 
 public:
-	TArrayHash(int size = 500) {
+	TArrayHash(int _k = 2,int size = 500) {
 		srand(time(NULL));
+		k = _k;
 		num_of_rehash = 0;
 		arr = new string*[2];
 		arr[0] = new string[size];
 		arr[1] = new string[size];
 		maxsize = size;
 		p = maxsize;
+		k_indep_hash_func1 = new int[k];
+		k_indep_hash_func2 = new int[k];
 		while (true) {
 			if (IsPrime(p) == true)
 				break;
 			else 
 				p++;	
 		}
-		a1 = rand() % p + 1;
-		b1 = rand() % p;
-		a2 = rand() % p + 1;
-		b2 = rand() % p;
+		k_indep_hash_func1[0] = rand() % p + 1;
+		k_indep_hash_func2[0] = rand() % p + 1;
+		for (int i = 1; i < k; i++) {
+			k_indep_hash_func1[i] = rand() % p ;
+			k_indep_hash_func2[i] = rand() % p ;
+		}
+		//a1 = rand() % p + 1;
+		//b1 = rand() % p;
+		//a2 = rand() % p + 1;
+		//b2 = rand() % p;
 		for (int i = 0; i < maxsize; i++) {
 			arr[0][i] = "-";
 			arr[1][i] = "-";
@@ -78,6 +106,8 @@ public:
 		delete[] arr[1];
 		delete[] arr[2];
 		delete[] arr;
+		delete[] k_indep_hash_func1;
+		delete[] k_indep_hash_func2;
 	}
 
 
@@ -103,21 +133,23 @@ public:
 		arr = new string*[2];
 		arr[0] = new string[maxsize];
 		arr[1] = new string[maxsize];
-		a1 = rand() % p + 1;
-		b1 = rand() % p;
-		a2 = rand() % p + 1;
-		b2 = rand() % p;
+		k_indep_hash_func1[0] = rand() % p + 1;
+		k_indep_hash_func2[0] = rand() % p + 1;
+		for (int i = 1; i < k; i++) {
+			k_indep_hash_func1[i] = rand() % p;
+			k_indep_hash_func2[i] = rand() % p;
+		}
 		for (int i = 0; i < maxsize; i++) {
 			arr[0][i] = "-";
 			arr[1][i] = "-";
 		}
 	}
-	int Find(string k) {
-		curr = HashFunc(1,k, maxsize, a1,b1,a2,b2,p);
-		if (arr[0][curr] == k || arr[0][curr] == k)
+	int Find(string st) {
+		curr = HashFunc(1,st, maxsize, k_indep_hash_func1, k_indep_hash_func2, p, k);
+		if (arr[0][curr] == st || arr[0][curr] == st)
 			return curr;
-		curr = HashFunc(2, k, maxsize, a1, b1, a2, b2, p);
-		if (arr[1][curr] == k || arr[1][curr] == k)
+		curr = HashFunc(2, st, maxsize, k_indep_hash_func1, k_indep_hash_func2, p, k);
+		if (arr[1][curr] == st || arr[1][curr] == st)
 			return curr;
 		return -1;
 	}
@@ -174,8 +206,8 @@ public:
 
 
 
-		pos[0] = (this->HashFunc(1, tr, maxsize, a1, b1, a2, b2, p));
-		pos[1] = (this->HashFunc(2, tr, maxsize, a1, b1, a2, b2, p));
+		pos[0] = (this->HashFunc(1, tr, maxsize, k_indep_hash_func1,k_indep_hash_func2, p, k));
+		pos[1] = (this->HashFunc(2, tr, maxsize, k_indep_hash_func1, k_indep_hash_func2, p, k));
 
 		if (arr[0][pos[0]] == tr || arr[1][pos[1]] == tr)
 			return true;
