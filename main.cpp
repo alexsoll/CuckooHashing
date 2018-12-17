@@ -80,7 +80,7 @@ string randomStrGen(int length, std::normal_distribution<> &uid, std::mt19937 &g
 	result.resize(length);
 
 	for (int i = 0; i < length; i++) {
-		result[i] = charset[uid(gen)];
+		result[i] = charset[abs(int(uid(gen)))%61];
 	}
 	//cout << GetChar(result) << " ";
 	return result;
@@ -145,11 +145,6 @@ string randomStrGen(int length, std::normal_distribution<> &uid, std::mt19937 &g
 
 
 
-
-
-
-
-
 	static string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 	std::mt19937 gen(time(0));
 	std::normal_distribution<> dist(30, 7);
@@ -172,20 +167,12 @@ string randomStrGen(int length, std::normal_distribution<> &uid, std::mt19937 &g
 	}
 
 
-
 	Cuckoo(t, num_of_data, n, hs);
 	volkovCuckoo(di, num_of_data, n, hs);
 	int rehash = hs->GetNumOfRehash();
 	
 	hs->printHash();
 	cout << "Number of rehash is " << rehash << " " << '\n';
-
-
-
-
-
-
-
 
 
 	return 0;
@@ -199,18 +186,19 @@ int main() {
 	result.resize(4);
 	srand(time(NULL));
 	TArrayHash *hs;
-	int size = 2000;
-	int num_of_data = 1000;
-	hs = new TArrayHash(5,size);
+	int size = 100000;
+	int num_of_data = 50000;
+	hs = new TArrayHash(2,size);
 	string *t;
 	t = new string[num_of_data]; 
 	int n = floor(3 * log(size));
 	for (int i = 0; i < num_of_data; i++) {
-		t[i] = randomStrGen(15, dist, gen);
+		t[i] = randomStrGen(10, dist, gen);
 	}
 	Cuckoo(t,num_of_data,n, hs);
 	int rehash = hs->GetNumOfRehash();
 	cout << "Number of rehash is " << rehash << " " << '\n';
+	cout << "Number of string " << hs->getDataCount() << '\n';	
 	//hs->printHash();
 
 	
