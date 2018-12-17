@@ -186,20 +186,42 @@ int main() {
 	result.resize(4);
 	srand(time(NULL));
 	TArrayHash *hs;
-	int size = 100000;
-	int num_of_data = 50000;
-	hs = new TArrayHash(2,size);
-	string *t;
-	t = new string[num_of_data]; 
-	int n = floor(3 * log(size));
-	for (int i = 0; i < num_of_data; i++) {
-		t[i] = randomStrGen(10, dist, gen);
-	}
-	Cuckoo(t,num_of_data,n, hs);
-	int rehash = hs->GetNumOfRehash();
-	cout << "Number of rehash is " << rehash << " " << '\n';
-	cout << "Number of string " << hs->getDataCount() << '\n';	
-	//hs->printHash();
+
+	//for (int z = 0; z < 1000; z++)
+	//{
+
+		int size = 300;
+		int num_of_data = 150;
+		hs = new TArrayHash(2, size);
+		string *t;
+		t = new string[num_of_data];
+		int n = floor(3 * log(size));
+		//n = 4 * size;
+		for (int i = 0; i < num_of_data; i++) {
+			t[i] = randomStrGen(10, dist, gen);
+		}
+
+
+//		ofstream ofs;
+//		ofs.open("data", 'w');
+//		for (int i = 0; i < num_of_data; i++)
+//			ofs << t[i] << " ";
+//		ofs.close();
+
+	//	ifstream ifs("data");
+		//for (int i = 0; i < num_of_data; i++)
+		//	ifs >> t[i];
+		//ifs.close();
+
+
+		Cuckoo(t, num_of_data, n, hs);
+		int rehash = hs->GetNumOfRehash();
+		
+		hs->printHash();
+		cout << "Number of rehash is " << rehash << " " << '\n';
+		cout << "Number of string " << hs->getDataCount() << '\n';
+
+	//}
 
 	
 	return 0;

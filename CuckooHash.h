@@ -89,6 +89,7 @@ public:
 		//srand(time(NULL));
 		k = _k;
 		num_of_rehash = 0;
+		DataCount = 0;
 		arr = new string*[2];
 		arr[0] = new string[size];
 		arr[1] = new string[size];
@@ -103,20 +104,20 @@ public:
 				p++;	
 		}
 		//p = 433494437;
-		k_indep_hash_func1[0] = rand() % p + 1;
-		k_indep_hash_func2[0] = rand() % p + 1;
+		k_indep_hash_func1[0] = (rand() % p) + 1;
+		k_indep_hash_func2[0] = (rand() % p) + 1;
 		for (int i = 1; i < k; i++) {
 			k_indep_hash_func1[i] = rand() % p ;
 			k_indep_hash_func2[i] = rand() % p ;
 		}
 		for (int i = 0; i < k; i++) {
-			cout << k_indep_hash_func1[i] << " ";
+	//		cout << k_indep_hash_func1[i] << " ";
 		}
-		cout << '\n';
+		//cout << '\n';
 		for (int i = 0; i < k; i++) {
-			cout << k_indep_hash_func2[i] << " ";
+	//		cout << k_indep_hash_func2[i] << " ";
 		}
-		cout << '\n';
+	//	cout << '\n';
 		for (int i = 0; i < maxsize; i++) {
 			arr[0][i] = "-";
 			arr[1][i] = "-";
@@ -166,27 +167,43 @@ public:
 		//delete[] arr[2];
 		delete[] arr;
 
+
+		p = maxsize + rand();
+		while (true) {
+			if (IsPrime(p) == true)
+				break;
+			else
+				p++;
+		}
+
+		//cout << "pi change\n";
+
+
+
+
 		arr = new string*[2];
 		arr[0] = new string[maxsize];
 		arr[1] = new string[maxsize];
-		k_indep_hash_func1[0] = rand() % p + 1;
-		k_indep_hash_func2[0] = rand() % p + 1;
+		k_indep_hash_func1[0] = (rand() % p) + 1;
+		k_indep_hash_func2[0] = (rand() % p) + 1;
 		for (int i = 1; i < k; i++) {
 			k_indep_hash_func1[i] = rand() % p;
 			k_indep_hash_func2[i] = rand() % p;
 		}
 		for (int i = 0; i < k; i++) {
-			cout << k_indep_hash_func1[i] << " ";
+		//	cout << k_indep_hash_func1[i] << " ";
 		}
-		cout << '\n';
+	//	cout << '\n';
 		for (int i = 0; i < k; i++) {
-			cout << k_indep_hash_func2[i] << " ";
+	//		cout << k_indep_hash_func2[i] << " ";
 		}
-		cout << '\n';
+		//cout << '\n';
 		for (int i = 0; i < maxsize; i++) {
 			arr[0][i] = "-";
 			arr[1][i] = "-";
 		}
+
+
 	}
 	int Find(string st) {
 		curr = HashFunc(1,st, maxsize, k_indep_hash_func1, k_indep_hash_func2, p, k);
@@ -209,7 +226,7 @@ public:
 	bool Place(string tr, int tableID, int cnt, int n) { 
 		bool flag;
 		if (cnt == n) {
-			cout << "Cycle present. Rehash. \n";
+		//	cout << "Cycle present. Rehash. \n";
 			rehash();
 			num_of_rehash++;
 			return false;
