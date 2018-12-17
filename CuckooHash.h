@@ -1,32 +1,67 @@
 #pragma once
 #include <iostream>
 #include <time.h>
+#include <random>
 using namespace std;
 
 //---------------------------------------------------------------------------------------------------------//
 
 
-class THashTable{
+
+class THashTable {
 protected:
-	int HashFunc(int function, string k, int maxsize, int _a1, int _b1, int _a2, int _b2, int _p) {
-		int pos = 0;
-		switch (function) {
-		case 1:
-			for (int i = 0; i < k.length(); i++)
-				pos += k[i];
-			pos = ((pos * _a1 + _b1) % _p) % maxsize;
-		
-		case 2:
-			for (int i = 0; i < k.length(); i++) {
-				pos += k[i];
-			pos = ((pos * _a2 + _b2) % _p) % maxsize;
-			}
-		return pos;
+
+	long int mypoww(long int a, long int b) {
+		long int res = 1;
+		for (long int i = 0; i < b; i++) {
+			res *= a;
 		}
+		return res;
 	}
+
+	int HashFunc(int function, string st, int maxsize, int* &k_indep1, int* &k_indep2, int _p, int k) {
+		int pos = 0;
+		long long int res = 0;
+		switch (function) {
+			/*case 1:
+				for (int i = 0; i < k.length(); i++)
+					pos += abs(k[i]);
+				pos = ((pos * _a1 + _b1) % _p) % maxsize;
+				break;
+			case 2:
+				for (int i = 0; i < k.length(); i++) {
+					pos += abs(k[i]);
+				pos = ((pos * _a2 + _b2) % _p) % maxsize;
+				}
+
+			*/
+		case 1:
+			for (int i = 0; i < st.length(); i++)
+				pos += abs(st[i] * exp((i + 1)));
+				//pos += abs(st[i] * (i+1));
+			for (int i = 0; i < k; i++) {
+				res += k_indep1[i] * mypoww(pos, k - i - 1);// pow(double(pos), double(k - i - 1));
+			}
+			res = abs(((res % _p) % maxsize));
+			//res = fmod(fmod(res , double(_p)), double(maxsize) );
+			break;
+		case 2:
+			for (int i = 0; i < st.length(); i++)
+				pos += abs(st[i] * exp((i + 1)));
+				//pos += abs(st[i] * (i + 1));
+			for (int i = 0; i < k; i++) {
+				res += k_indep2[i] * mypoww(pos, k - i - 1);//pow(double(pos), double(k - i - 1));
+			}
+			//res = fmod(fmod(res, double(_p)), double(maxsize));
+			res = abs(((res % _p) % maxsize));
+			break;
+		}
+		return res;
+	}
+
 };
 
-
+ 
 //---------------------------------------------------------------------------------------------------------//
 
 
@@ -35,31 +70,66 @@ protected:
 	int maxsize, curr, DataCount, a1, b1, p, a2, b2;
 	int num_of_rehash;
 	string **arr;
+	int k;
+	int *k_indep_hash_func1, *k_indep_hash_func2;
 	int pos[2];
+
+	//static std::mt19937 gen;
+	//static std::uniform_int_distribution<> dist;
+
+
+
 public:
-	TArrayHash(int size = 500) {
-		srand(time(NULL));
+	TArrayHash(int _k = 2,int size = 500) {
+		//srand(time(NULL));
+		k = _k;
 		num_of_rehash = 0;
 		arr = new string*[2];
 		arr[0] = new string[size];
 		arr[1] = new string[size];
 		maxsize = size;
-		p = maxsize;
-		while (true) {
-			if (IsPrime(p) == true)
-				break;
-			else 
-				p++;	
+		//p = maxsize;
+		k_indep_hash_func1 = new int[k];
+		k_indep_hash_func2 = new int[k];
+		//while (true) {
+		//	if (IsPrime(p) == true)
+		//		break;
+		//	else 
+		//		p++;	
+		//}
+		p = 433494437;
+		//k_indep_hash_func1[0] = dist(gen) %p +1;
+		k_indep_hash_func1[0] = rand() % p + 1;
+		k_indep_hash_func2[0] = rand() % p + 1;
+		for (int i = 1; i < k; i++) {
+			k_indep_hash_func1[i] = rand() % p ;
+			k_indep_hash_func2[i] = rand() % p ;
 		}
-		a1 = rand() % p + 1;
-		b1 = rand() % p;
-		a2 = rand() % p + 1;
-		b2 = rand() % p;
+		for (int i = 0; i < k; i++) {
+			cout << k_indep_hash_func1[i] << " ";
+		}
+		cout << '\n';
+		for (int i = 0; i < k; i++) {
+			cout << k_indep_hash_func2[i] << " ";
+		}
+		cout << '\n';
+		//a1 = rand() % p + 1;
+		//b1 = rand() % p;
+		//a2 = rand() % p + 1;
+		//b2 = rand() % p;
 		for (int i = 0; i < maxsize; i++) {
 			arr[0][i] = "-";
 			arr[1][i] = "-";
 		}
 	}
+
+	long int mypoww(long int a, long int b) {
+	long int res = 1;
+	for (long int i = 0; i < b; i++) {
+		res *= a;
+	}
+	return res;
+}
 
 	bool IsPrime(int num) {
 		for (int i = 2; i <= sqrt(num); i++)
@@ -72,6 +142,8 @@ public:
 		delete[] arr[1];
 		delete[] arr[2];
 		delete[] arr;
+		delete[] k_indep_hash_func1;
+		delete[] k_indep_hash_func2;
 	}
 
 
@@ -97,21 +169,31 @@ public:
 		arr = new string*[2];
 		arr[0] = new string[maxsize];
 		arr[1] = new string[maxsize];
-		a1 = rand() % p + 1;
-		b1 = rand() % p;
-		a2 = rand() % p + 1;
-		b2 = rand() % p;
+		k_indep_hash_func1[0] = rand() % p + 1;
+		k_indep_hash_func2[0] = rand() % p + 1;
+		for (int i = 1; i < k; i++) {
+			k_indep_hash_func1[i] = rand() % p;
+			k_indep_hash_func2[i] = rand() % p;
+		}
+		for (int i = 0; i < k; i++) {
+			cout << k_indep_hash_func1[i] << " ";
+		}
+		cout << '\n';
+		for (int i = 0; i < k; i++) {
+			cout << k_indep_hash_func2[i] << " ";
+		}
+		cout << '\n';
 		for (int i = 0; i < maxsize; i++) {
 			arr[0][i] = "-";
 			arr[1][i] = "-";
 		}
 	}
-	int Find(string k) {
-		curr = HashFunc(1,k, maxsize, a1,b1,a2,b2,p);
-		if (arr[0][curr] == k || arr[0][curr] == k)
+	int Find(string st) {
+		curr = HashFunc(1,st, maxsize, k_indep_hash_func1, k_indep_hash_func2, p, k);
+		if (arr[0][curr] == st || arr[0][curr] == st)
 			return curr;
-		curr = HashFunc(2, k, maxsize, a1, b1, a2, b2, p);
-		if (arr[1][curr] == k || arr[1][curr] == k)
+		curr = HashFunc(2, st, maxsize, k_indep_hash_func1, k_indep_hash_func2, p, k);
+		if (arr[1][curr] == st || arr[1][curr] == st)
 			return curr;
 		return -1;
 	}
@@ -124,24 +206,30 @@ public:
 	when there is a free cell in it.
 	*/
 
-	/*void Place(string tr, int tableID, int cnt, int n) {  
+	bool Place(string tr, int tableID, int cnt, int n) { 
+		bool flag;
 		if (cnt == n) {
 			cout << "Cycle present. Rehash. \n";
-			return;
+			rehash();
+			num_of_rehash++;
+			return false;
 		}
-		pos[0] = (this->HashFunc(1, tr)) % maxsize;
-		pos[1] = (this->HashFunc(2, tr)) % maxsize;
+		pos[0] = (this->HashFunc(1, tr, maxsize, k_indep_hash_func1, k_indep_hash_func2, p, k)) % maxsize;
+		pos[1] = (this->HashFunc(2, tr, maxsize, k_indep_hash_func1, k_indep_hash_func2, p, k)) % maxsize;
 		if (arr[0][pos[0]] == tr || arr[1][pos[1]] == tr)
-			return;
-		if (arr[tableID][pos[tableID]] != " ") {
+			return true;
+		if (arr[tableID][pos[tableID]] != "-") {
 			string tmp = arr[tableID][pos[tableID]];
 			arr[tableID][pos[tableID]] = tr;
-			Place(tmp, (tableID + 1) % 2, cnt + 1, n);
+			flag = Place(tmp, (tableID + 1) % 2, cnt + 1, n);
+			if (flag == false)
+				return false;
 		}
 		else {
 			arr[tableID][pos[tableID]] = tr;
+			return true;
 		}
-	}*/
+	}
 
 	/*
 	This implementation takes into account the possibility to 
@@ -150,16 +238,23 @@ public:
 	is added there. The extruded element tries to change position.
 	*/
 
-	bool Place(string tr, int cnt, int n) {
+	/*bool Place(string tr, int cnt, int n) {
 		bool flag;
+		
+		
+		
 		if (cnt == n) {
 			cout << "Cycle present. Rehash. \n";
-			//rehash();
+			rehash();
 			num_of_rehash++;
 			return false;
 		}
-		pos[0] = (this->HashFunc(1, tr, maxsize, a1, b1, a2, b2, p));
-		pos[1] = (this->HashFunc(2, tr, maxsize, a1, b1, a2, b2, p));
+
+
+
+
+		pos[0] = (this->HashFunc(1, tr, maxsize, k_indep_hash_func1,k_indep_hash_func2, p, k));
+		pos[1] = (this->HashFunc(2, tr, maxsize, k_indep_hash_func1, k_indep_hash_func2, p, k));
 
 		if (arr[0][pos[0]] == tr || arr[1][pos[1]] == tr)
 			return true;
@@ -187,7 +282,7 @@ public:
 			DataCount++;
 		}
 	}
-	
+	*/
 	string GetValueInFirstTable(int pos) {
 		return arr[0][pos];
 	}
@@ -228,11 +323,16 @@ public:
 		cout << "--------------TABLE 1----------------TABLE2------------" << '\n';
 		for (int i = 0; i < maxsize; i++) {
 			string tmp = GetValueInFirstTable(i);
-			cout << i  << '\t' << GetString(arr[0][i]) << '\t' << GetString(arr[1][i]) << '\n';
+			//cout << i  << '\t' << GetString(arr[0][i]) << '\t' << GetString(arr[1][i]) << '\n';
+			cout << i << '\t' << GetString(arr[0][i]) << '\t' << GetString(arr[1][i]) << '\n';
+			//cout << "Ëîë";
 		}
  		cout << "--------------------------------------------------------";
 	}
 
 };
 
+
+//std::mt19937 TArrayHash::gen = std::mt19937(time(NULL));
+//std::uniform_int_distribution<> TArrayHash::dist = std::uniform_int_distribution<>(0, INT_MAX);
 //---------------------------------------------------------------------------------------------------------//
