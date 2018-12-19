@@ -21,7 +21,7 @@ protected:
 
 	long long int HashFunc(int function, string st, int maxsize, int* &k_indep1, int* &k_indep2, int _p, int k) {
 		long long int pos = 0;
-		const int prime_number = 67;
+		const int prime_number = 127;
 		long long int res = 0, p_pow = 1;
 		switch (function) {
 			/*case 1:
@@ -133,7 +133,7 @@ public:
 }
 
 	bool IsPrime(int num) {
-		for (int i = 2; i <= sqrt(num); i++)
+		for (int i = 2; i <= sqrt(num) + 1; i++)
 			if (num%i == 0)
 				return false;
 		return true;
@@ -176,7 +176,7 @@ public:
 				p++;
 		}
 
-		//cout << "pi change\n";
+		cout << "pi change\n";
 
 
 
@@ -226,7 +226,7 @@ public:
 	bool Place(string tr, int tableID, int cnt, int n) { 
 		bool flag;
 		if (cnt == n) {
-		//	cout << "Cycle present. Rehash. \n";
+			cout << "Cycle present. Rehash. \n";
 			rehash();
 			num_of_rehash++;
 			return false;
