@@ -6,6 +6,9 @@
 #include <random>
 #include <fstream>
 #include <vector>
+#include "openAdressHash.h"
+#include "listHash.h"
+#include <Windows.h>
 using namespace std;
 
 
@@ -49,7 +52,7 @@ char* GetChar(string str) {
 void Cuckoo(string *tr, int size, int n, TArrayHash* &hash) {
 	bool flag;
 	for (int i = 0, cnt = 0; i < size; i++) {
-		flag = hash->Place(tr[i],0, cnt, n);
+		flag = hash->Place(tr[i], 0, cnt, n);
 		if (flag == false) {
 			hash->rehash();
 			i = -1;
@@ -186,20 +189,102 @@ int main() {
 	result.resize(4);
 	srand(time(NULL));
 	TArrayHash *hs;
-	int size = 100000;
-	int num_of_data = 50000;
-	hs = new TArrayHash(2,size);
-	string *t;
-	t = new string[num_of_data]; 
-	int n = floor(3 * log(size));
-	for (int i = 0; i < num_of_data; i++) {
-		t[i] = randomStrGen(10, dist, gen);
-	}
-	Cuckoo(t,num_of_data,n, hs);
-	int rehash = hs->GetNumOfRehash();
-	cout << "Number of rehash is " << rehash << " " << '\n';
-	cout << "Number of string " << hs->getDataCount() << '\n';	
-	//hs->printHash();
+	DWORD coockoo_time;
+	DWORD open_adress_time;
+	DWORD list_hash_time;
+
+
+	List list;
+
+
+
+
+
+	//for (int z = 0; z < 1000; z++)
+	//{
+
+		int size = 50000;
+		int num_of_data = 35000;
+		hs = new TArrayHash(5, size);
+		string *t;
+		t = new string[num_of_data];
+		int n = floor(3 * log(size));
+		//n = 4 * size;
+		for (int i = 0; i < num_of_data; i++) {
+			t[i] = randomStrGen(10, dist, gen);
+		}
+
+
+		openAdressHashTable openAHST(35000 * 1.5);
+		listhashTable listHST(sqrt(num_of_data) + 1);
+
+
+
+
+		DWORD st_time;
+		DWORD en_time;
+
+		st_time = GetTickCount();
+		for (int i = 0; i < num_of_data; i++)
+		{
+			listHST.Place(Node(t[i], -1));
+		}
+		en_time = GetTickCount();
+		list_hash_time = en_time - st_time;
+
+
+
+
+
+
+		st_time = GetTickCount();
+		for (int i = 0; i < num_of_data; i++)
+		{
+		openAHST.Place(Node(t[i], -1));
+		}
+		en_time = GetTickCount();
+		open_adress_time = en_time - st_time;
+
+		
+//		ofstream ofs;
+//		ofs.open("data", 'w');
+//		for (int i = 0; i < num_of_data; i++)
+//			ofs << t[i] << " ";
+//		ofs.close();
+
+	//	ifstream ifs("data");
+		//for (int i = 0; i < num_of_data; i++)
+		//	ifs >> t[i];
+		//ifs.close();
+	
+		st_time = GetTickCount();
+		Cuckoo(t, num_of_data, n, hs);
+		en_time = GetTickCount();
+		coockoo_time = en_time - st_time;
+
+
+		int rehash = hs->GetNumOfRehash();
+
+
+
+		
+	//	hs->printHash();
+		cout << "Number of rehash is " << rehash << " " << '\n';
+		cout << "Number of string " << hs->getDataCount() << '\n';
+	//	cout << "Count of element in list hash table = " << listHST.el_count << "\n";
+		cout << "Collisio resolve count in open adress hash table = " << openAHST.colission_resolving_count << "\n";
+		cout << "Avereage dispersion on list HS = " << listHST.dispers() << "\n";
+		cout << "List table hash size = " << listHST.size << "\n";
+		//openAHST.print();
+		cout << "\n";
+		cout << "Coockoo time = \t" << coockoo_time << "ms\n";
+		cout << "Open adress time = \t" << open_adress_time << "ms\n";
+		cout << "List hast table time = \t" << list_hash_time << "ms\n";
+
+
+		//listHST.print();
+		
+	//}
 
 	
 	return 0;
