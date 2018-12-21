@@ -89,6 +89,7 @@ public:
 		//srand(time(NULL));
 		k = _k;
 		num_of_rehash = 0;
+		DataCount = 0;
 		arr = new string*[2];
 		arr[0] = new string[size];
 		arr[1] = new string[size];
@@ -103,20 +104,20 @@ public:
 				p++;	
 		}
 		//p = 433494437;
-		k_indep_hash_func1[0] = rand() % p + 1;
-		k_indep_hash_func2[0] = rand() % p + 1;
+		k_indep_hash_func1[0] = (rand() % p) + 1;
+		k_indep_hash_func2[0] = (rand() % p) + 1;
 		for (int i = 1; i < k; i++) {
 			k_indep_hash_func1[i] = rand() % p ;
 			k_indep_hash_func2[i] = rand() % p ;
 		}
 		for (int i = 0; i < k; i++) {
-			cout << k_indep_hash_func1[i] << " ";
+	//		cout << k_indep_hash_func1[i] << " ";
 		}
-		cout << '\n';
+		//cout << '\n';
 		for (int i = 0; i < k; i++) {
-			cout << k_indep_hash_func2[i] << " ";
+	//		cout << k_indep_hash_func2[i] << " ";
 		}
-		cout << '\n';
+	//	cout << '\n';
 		for (int i = 0; i < maxsize; i++) {
 			arr[0][i] = "-";
 			arr[1][i] = "-";
@@ -132,7 +133,7 @@ public:
 }
 
 	bool IsPrime(int num) {
-		for (int i = 2; i <= sqrt(num); i++)
+		for (int i = 2; i <= sqrt(num) + 1; i++)
 			if (num%i == 0)
 				return false;
 		return true;
@@ -166,27 +167,43 @@ public:
 		//delete[] arr[2];
 		delete[] arr;
 
+
+		p = maxsize + rand();
+		while (true) {
+			if (IsPrime(p) == true)
+				break;
+			else
+				p++;
+		}
+
+		cout << "pi change\n";
+
+
+
+
 		arr = new string*[2];
 		arr[0] = new string[maxsize];
 		arr[1] = new string[maxsize];
-		k_indep_hash_func1[0] = rand() % p + 1;
-		k_indep_hash_func2[0] = rand() % p + 1;
+		k_indep_hash_func1[0] = (rand() % p) + 1;
+		k_indep_hash_func2[0] = (rand() % p) + 1;
 		for (int i = 1; i < k; i++) {
 			k_indep_hash_func1[i] = rand() % p;
 			k_indep_hash_func2[i] = rand() % p;
 		}
 		for (int i = 0; i < k; i++) {
-			cout << k_indep_hash_func1[i] << " ";
+		//	cout << k_indep_hash_func1[i] << " ";
 		}
-		cout << '\n';
+	//	cout << '\n';
 		for (int i = 0; i < k; i++) {
-			cout << k_indep_hash_func2[i] << " ";
+	//		cout << k_indep_hash_func2[i] << " ";
 		}
-		cout << '\n';
+		//cout << '\n';
 		for (int i = 0; i < maxsize; i++) {
 			arr[0][i] = "-";
 			arr[1][i] = "-";
 		}
+
+
 	}
 	int Find(string st) {
 		curr = HashFunc(1,st, maxsize, k_indep_hash_func1, k_indep_hash_func2, p, k);
@@ -225,6 +242,53 @@ public:
 			flag = Place(tmp, (tableID + 1) % 2, cnt + 1, n);
 			if (flag == false)
 				return false;
+		}
+		else {
+			arr[tableID][pos[tableID]] = tr;
+			DataCount++;
+			return true;
+		}
+	}
+
+
+	bool PlaceIterative(string tr, int tableID, int cnt, int n) {
+		bool flag;
+		/*if (cnt == n) {
+			cout << "Cycle present. Rehash. \n";
+			rehash();
+			num_of_rehash++;
+			return false;
+		}*/
+
+		pos[0] = (this->HashFunc(1, tr, maxsize, k_indep_hash_func1, k_indep_hash_func2, p, k)) % maxsize;
+		pos[1] = (this->HashFunc(2, tr, maxsize, k_indep_hash_func1, k_indep_hash_func2, p, k)) % maxsize;
+		if (arr[0][pos[0]] == tr || arr[1][pos[1]] == tr)
+			return true;
+		if (arr[tableID][pos[tableID]] != "-") {
+			while (true) {
+				if (cnt == n) {
+					cout << "Cycle present. Rehash. \n";
+					rehash();
+					num_of_rehash++;
+				}
+				if (cnt == 0) {
+					DataCount++;
+				}
+				string tmp = arr[tableID][pos[tableID]];
+				arr[tableID][pos[tableID]] = tr;
+				tableID = (tableID + 1) % 2;
+				pos[0] = (this->HashFunc(1, tmp, maxsize, k_indep_hash_func1, k_indep_hash_func2, p, k)) % maxsize;
+				pos[1] = (this->HashFunc(2, tmp, maxsize, k_indep_hash_func1, k_indep_hash_func2, p, k)) % maxsize;
+				if (arr[tableID][pos[tableID]] == "-") {
+					arr[tableID][pos[tableID]] = tmp;
+					break;
+				}
+				tr = tmp;
+				cnt++;
+				//flag = Place(tmp, (tableID + 1) % 2, cnt + 1, n);
+				//if (flag == false)
+				//	return false;
+			}
 		}
 		else {
 			arr[tableID][pos[tableID]] = tr;

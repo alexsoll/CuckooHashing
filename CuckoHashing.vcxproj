@@ -121,6 +121,8 @@
   <ItemGroup>
     <ClInclude Include="CuckooHash.h" />
     <ClInclude Include="list.h" />
+    <ClInclude Include="listHash.h" />
+    <ClInclude Include="openAdressHash.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
