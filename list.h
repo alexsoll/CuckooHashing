@@ -48,6 +48,75 @@ public:
 		size = 0;
 	}
 	
+	int del(string st)
+	{
+		Node *cur;
+
+		// Ноль
+		if (size == 0) return -1;
+
+
+		// Один
+		if (size == 1)
+		{
+			if (root->key == st)
+			{
+				size = 0;
+				delete root;
+				root = NULL;
+				tail = NULL;
+				return 1;
+			}
+			else return - 1;
+		}
+		
+		// Много
+		cur = root;
+		for (int i = 0; i < size; i++)
+		{
+			if (cur->key == st)
+			{
+
+				// Первый
+				if (cur == root)
+				{
+					Node * tmp;
+					tmp = root;
+					root = root->next;
+					delete tmp;
+					root->prev = NULL;
+					size--;
+					return 1;
+				}				
+				
+				//Последний
+				if (cur == tail)
+				{
+					tail = cur->prev;
+					delete cur;
+					size--;
+					return 1;
+				}
+							
+				//В серединке
+				Node * tmp;
+				tmp = cur;
+				cur->next->prev = cur->prev;
+				cur->prev->next = cur->next;
+				delete tmp;
+				size--;
+				return 1;
+
+			}
+
+
+			cur = cur->next;
+
+		}
+		return -1;	
+	}
+
+
 	int push(Node node)
 	{
 		

@@ -1,4 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
+#define _USE_MATH_DEFINES
 #include "list.h"
 #include <time.h>
 #include "CuckooHash.h"
@@ -52,7 +53,7 @@ char* GetChar(string str) {
 void Cuckoo(string *tr, int size, int n, TArrayHash* &hash) {
 	bool flag;
 	for (int i = 0, cnt = 0; i < size; i++) {
-		flag = hash->PlaceIterative(tr[i], 0, cnt, n);
+		flag = hash->Place(tr[i], 0, cnt, n);
 		if (flag == false) {
 			hash->rehash();
 			i = -1;
@@ -88,14 +89,6 @@ string randomStrGen(int length, std::normal_distribution<> &uid, std::mt19937 &g
 	//cout << GetChar(result) << " ";
 	return result;
 }
-
-
-
-
-
-
-
-
 
 
 
@@ -181,10 +174,35 @@ string randomStrGen(int length, std::normal_distribution<> &uid, std::mt19937 &g
 	return 0;
 }*/
 
+
+
+
+int string_to_int(string st)
+{
+
+	int pos = 0;
+	int prime = 67;
+	int pow = 1;
+	for (int i = 0; i < st.length(); i++)
+	{
+		pos += st[i] * pow;
+		pow *= prime;
+	}
+	pos = abs(pos);
+	return pos;
+}
+
+
+
+
+
+
+
+
 int main() {
 	static string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 	std::mt19937 gen(time(0));
-	std::normal_distribution<> dist(30, 4);
+	std::normal_distribution<> dist(30, 7);
 	string result;
 	result.resize(4);
 	srand(time(NULL));
@@ -194,17 +212,10 @@ int main() {
 	DWORD list_hash_time;
 
 
-	List list;
+	
 
-
-
-
-
-	//for (int z = 0; z < 1000; z++)
-	//{
-
-		int size = 2000000;
-		int num_of_data = 1000000;
+		int size = 50000;
+		int num_of_data = 35000;
 		hs = new TArrayHash(5, size);
 		string *t;
 		t = new string[num_of_data];
@@ -214,14 +225,9 @@ int main() {
 			t[i] = randomStrGen(10, dist, gen);
 		}
 
-
-		//openAdressHashTable openAHST(50000 * 1.5);
-		//listhashTable listHST(sqrt(num_of_data) + 1);
-		listhashTable listHST(200000, 5);
-		openAdressHashTable openAHST(1000000 + 5000, 5);
-
-
-
+		openAdressHashTable openAHST(35000, 2);
+		listhashTable listHST(sqrt(num_of_data) + 1, 2);
+		
 		DWORD st_time;
 		DWORD en_time;
 
@@ -245,18 +251,8 @@ int main() {
 		}
 		en_time = GetTickCount();
 		open_adress_time = en_time - st_time;
-		
-//		ofstream ofs;
-//		ofs.open("data", 'w');
-//		for (int i = 0; i < num_of_data; i++)
-//			ofs << t[i] << " ";
-//		ofs.close();
 
-	//	ifstream ifs("data");
-		//for (int i = 0; i < num_of_data; i++)
-		//	ifs >> t[i];
-		//ifs.close();
-	
+
 		st_time = GetTickCount();
 		Cuckoo(t, num_of_data, n, hs);
 		en_time = GetTickCount();
@@ -264,63 +260,196 @@ int main() {
 
 
 		int rehash = hs->GetNumOfRehash();
+				
 
-
-
-		
-	//	hs->printHash();
 		cout << "Number of rehash is " << rehash << " " << '\n';
 		cout << "Number of string " << hs->getDataCount() << '\n';
-
-		cout << "List table data count = " << listHST.el_count << "\n";
-		cout << "Open hashing table data count = " << openAHST.el_count << "\n";
-	//	cout << "Count of element in list hash table = " << listHST.el_count << "\n";
+	
 		cout << "Collisio resolve count in open adress hash table = " << openAHST.colission_resolving_count << "\n";
 		cout << "Avereage dispersion on list HS = " << listHST.dispers() << "\n";
 		cout << "List table hash size = " << listHST.size << "\n";
-
-
-		//openAHST.print();
+	
 		cout << "\n";
 		cout << "Coockoo time = \t" << coockoo_time << "ms\n";
 		cout << "Open adress time = \t" << open_adress_time << "ms\n";
 		cout << "List hast table time = \t" << list_hash_time << "ms\n";
-
-
-		for (int i = 0; i < 5000; i++) {
-			t[i] = randomStrGen(10, dist, gen);
-		}
-
-		st_time = GetTickCount();
-		for (int i = 0; i < 5000; i++) {
-			hs->PlaceIterative(t[i], 0, 0, n);
-		}
-		en_time = GetTickCount();
-		coockoo_time = en_time - st_time;
-
-		st_time = GetTickCount();
-		for (int i = 0; i < 5000; i++) {
-			listHST.Place(Node(t[i], -1));
-		}
-		en_time = GetTickCount();
-		list_hash_time = en_time - st_time;
-
-		st_time = GetTickCount();
-		for (int i = 0; i < 50000; i++) {
-			openAHST.Place(Node(t[i], -1));
-		}
-		en_time = GetTickCount();
-		open_adress_time = en_time - st_time;
-
-		cout << "\n";
-		cout << " Coockoo time insert 5k elemenst after generate table = \t" << coockoo_time  << "ms\n";
-		cout << " Open adress time insert 5k elemenst after generate table = \t" << open_adress_time << "ms\n";
-		cout << " List hast table time insert 5k elemenst after generate table = \t" << list_hash_time  << "ms\n";
-
-		//listHST.print();
 		
-	//}
+
+
 
 	
 	return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* // LIST TESTING BLOCK
+list.push(Node("Lol", 1));
+list.del("Lol");
+list.printList();
+list.push(Node("Lol", 1));
+list.printList();
+list.push(Node("Lol1", 1));
+cout << "\n";
+list.printList();
+list.del("Lol");
+cout << "\n";
+list.printList();
+list.push(Node("Lol2", 1));
+list.push(Node("Lol3", 1));
+list.push(Node("Lol4", 1));
+list.push(Node("Lol5", 1));
+cout << "\n";
+list.printList();
+list.del("Lol5");
+cout << "\n";
+list.printList();
+
+list.del("Lol3");
+cout << "\n";
+list.printList();
+*/
+
+
+
+
+
+
+
+
+
+
+// Data_set_generation
+
+
+/*
+for (int i = 0; i < 50000; i++)
+{
+string_to_int_stats[i] = 0;
+}
+
+
+
+
+string ran;
+
+ofstream ofs;
+ofs.open("gauss_data_set_250K_words_3", 'w');
+
+
+ofstream ofs_2;
+ofs_2.open("gauss_data_set_250K_staticks_words_3", 'w');
+
+
+
+
+int counter = 0;
+int o_counter = 0;;
+
+
+while (counter < 5000)
+{
+ran = randomStrGen(10, dist, gen);
+int pos = string_to_int(ran) % 50000;
+if (pos < 10000)
+{
+ofs << ran << " ";
+string_to_int_stats[pos]++;
+counter++;
+}
+
+}
+cout << "10K gen" << "\n";
+counter = 0;
+
+
+
+while (counter < 20000)
+{
+ran = randomStrGen(10, dist, gen);
+int pos = string_to_int(ran) % 50000;
+if (pos > 10000 && pos < 15000)
+{
+ofs << ran << " ";
+string_to_int_stats[pos]++;
+counter++;
+}
+
+}
+cout << "10-15K gen" << "\n";
+counter = 0;
+
+
+
+while (counter < 200000)
+{
+ran = randomStrGen(10, dist, gen);
+int pos = string_to_int(ran) % 50000;
+if (pos > 15000 && pos < 35000)
+{
+ofs << ran << " ";
+string_to_int_stats[pos]++;
+counter++;
+}
+
+}
+cout << "15-35K gen" << "\n";
+counter = 0;
+
+
+while (counter < 20000)
+{
+ran = randomStrGen(10, dist, gen);
+int pos = string_to_int(ran) % 50000;
+if (pos > 35000 && pos < 40000)
+{
+ofs << ran << " ";
+string_to_int_stats[pos]++;
+counter++;
+}
+
+}
+cout << "35-40KK gen" << "\n";
+counter = 0;
+
+while (counter < 5000)
+{
+ran = randomStrGen(10, dist, gen);
+int pos = string_to_int(ran) % 50000;
+if (pos > 40000 && pos < 50000)
+{
+ofs << ran << " ";
+string_to_int_stats[pos]++;
+counter++;
+}
+
+}
+cout << "40-50K gen" << "\n";
+counter = 0;
+
+
+
+
+for (int i = 0; i < 50000; i++)
+ofs_2 << string_to_int_stats[i] << "\r\n";
+
+ofs.close();
+ofs_2.close();
+
+
+
+*/
