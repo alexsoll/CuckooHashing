@@ -21,13 +21,28 @@ public:
 
 	int HashFunc(string key)
 	{
-		int hash_pos = 0;
+
+		long long int pos = 0;
+		const int prime_number = 67;
+		long long int res = 0, p_pow = 1;
+
+		/*int hash_pos = 0;
 		for (int i = 0; i < key.length(); i++)
 		{
 			hash_pos += key[i] * mypoww(67, i);
 		}
 
-		return abs(hash_pos);
+		return abs(hash_pos);*/
+
+		for (int i = 0; i < key.length(); i++) {
+			pos += abs(key[i] - 'a' + 1) * p_pow;
+			p_pow *= prime_number;
+		}
+		for (int i = 0; i < k; i++) {
+			res += k_indep_hash_func[i] * mypoww(pos, k - i - 1);
+		}
+		res = abs(((res % p) % size));
+		return res;
 	}
 
 
@@ -35,13 +50,39 @@ public:
 	int size;
 	int el_count;
 	List *root;
+	int *k_indep_hash_func;
+	int p;
+	int k;
 	
-	listhashTable(int _size)
+	listhashTable(int _size, int _k)
 	{
 
 		el_count = 0;
 		size = _size;
 		root = new List[size];
+
+		k = _k;
+		k_indep_hash_func = new int[k];
+		p = size;
+		while (true) {
+			if (IsPrime(p) == true)
+				break;
+			else
+				p++;
+		}
+
+		k_indep_hash_func[0] = (rand() % p) + 1;
+		for (int i = 1; i < k; i++) {
+			k_indep_hash_func[i] = rand() % p;
+		}
+
+	}
+
+	bool IsPrime(int num) {
+		for (int i = 2; i <= sqrt(num) + 1; i++)
+			if (num%i == 0)
+				return false;
+		return true;
 	}
 
 	bool isEmpty()
@@ -53,7 +94,7 @@ public:
 	int Place(Node node)
 	{
 		int pos = HashFunc(node.key);
-		pos %= size;
+		//pos %= size;
 
 		bool already_exist = root[pos].findKey(node.key);
 		if (already_exist) return 1;

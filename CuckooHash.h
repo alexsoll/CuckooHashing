@@ -205,15 +205,37 @@ public:
 
 
 	}
+
+	/////////////FIND(STRING) and DELETE(STRING)//////////////////////
+
 	int Find(string st) {
-		curr = HashFunc(1,st, maxsize, k_indep_hash_func1, k_indep_hash_func2, p, k);
-		if (arr[0][curr] == st || arr[0][curr] == st)
-			return curr;
-		curr = HashFunc(2, st, maxsize, k_indep_hash_func1, k_indep_hash_func2, p, k);
-		if (arr[1][curr] == st || arr[1][curr] == st)
-			return curr;
+		pos[0] = (this->HashFunc(1, st, maxsize, k_indep_hash_func1, k_indep_hash_func2, p, k)) % maxsize;
+		pos[1] = (this->HashFunc(2, st, maxsize, k_indep_hash_func1, k_indep_hash_func2, p, k)) % maxsize;
+		if (arr[0][pos[0]] == st)
+			return pos[0];
+		if (arr[1][pos[1]] == st )
+			return pos[1];
 		return -1;
 	}
+
+	bool Delete(string st) {
+		int pos = Find(st);
+		if(pos == -1) {
+			return false;
+		}
+		else {
+			if (arr[0][pos] == st) {
+				arr[0][pos] = "-";
+				DataCount--;
+			}
+			else {
+				arr[1][pos] = "-";
+				DataCount--;
+			}
+		}
+	}
+
+	/////////////////////////////////////////////////////////////
 
 
 	/* 
@@ -262,14 +284,17 @@ public:
 
 		pos[0] = (this->HashFunc(1, tr, maxsize, k_indep_hash_func1, k_indep_hash_func2, p, k)) % maxsize;
 		pos[1] = (this->HashFunc(2, tr, maxsize, k_indep_hash_func1, k_indep_hash_func2, p, k)) % maxsize;
-		if (arr[0][pos[0]] == tr || arr[1][pos[1]] == tr)
+		if (arr[0][pos[0]] == tr || arr[1][pos[1]] == tr) {
+			//DataCount++;
 			return true;
+		}
 		if (arr[tableID][pos[tableID]] != "-") {
 			while (true) {
 				if (cnt == n) {
 					cout << "Cycle present. Rehash. \n";
 					rehash();
 					num_of_rehash++;
+					return false;
 				}
 				if (cnt == 0) {
 					DataCount++;

@@ -184,7 +184,7 @@ string randomStrGen(int length, std::normal_distribution<> &uid, std::mt19937 &g
 int main() {
 	static string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 	std::mt19937 gen(time(0));
-	std::normal_distribution<> dist(30, 1);
+	std::normal_distribution<> dist(30, 4);
 	string result;
 	result.resize(4);
 	srand(time(NULL));
@@ -203,8 +203,8 @@ int main() {
 	//for (int z = 0; z < 1000; z++)
 	//{
 
-		int size = 100000;
-		int num_of_data = 50000;
+		int size = 2000000;
+		int num_of_data = 1000000;
 		hs = new TArrayHash(5, size);
 		string *t;
 		t = new string[num_of_data];
@@ -217,8 +217,8 @@ int main() {
 
 		//openAdressHashTable openAHST(50000 * 1.5);
 		//listhashTable listHST(sqrt(num_of_data) + 1);
-		listhashTable listHST(10000);
-		openAdressHashTable openAHST(50000 + 5000);
+		listhashTable listHST(200000, 5);
+		openAdressHashTable openAHST(1000000 + 5000, 5);
 
 
 
@@ -271,10 +271,15 @@ int main() {
 	//	hs->printHash();
 		cout << "Number of rehash is " << rehash << " " << '\n';
 		cout << "Number of string " << hs->getDataCount() << '\n';
+
+		cout << "List table data count = " << listHST.el_count << "\n";
+		cout << "Open hashing table data count = " << openAHST.el_count << "\n";
 	//	cout << "Count of element in list hash table = " << listHST.el_count << "\n";
 		cout << "Collisio resolve count in open adress hash table = " << openAHST.colission_resolving_count << "\n";
 		cout << "Avereage dispersion on list HS = " << listHST.dispers() << "\n";
 		cout << "List table hash size = " << listHST.size << "\n";
+
+
 		//openAHST.print();
 		cout << "\n";
 		cout << "Coockoo time = \t" << coockoo_time << "ms\n";
@@ -301,16 +306,16 @@ int main() {
 		list_hash_time = en_time - st_time;
 
 		st_time = GetTickCount();
-		for (int i = 0; i < 5000; i++) {
+		for (int i = 0; i < 50000; i++) {
 			openAHST.Place(Node(t[i], -1));
 		}
 		en_time = GetTickCount();
 		open_adress_time = en_time - st_time;
 
 		cout << "\n";
-		cout << " AVG Coockoo time one insert= \t" << coockoo_time  << "ms\n";
-		cout << " AVG Open adress time one insert= \t" << open_adress_time << "ms\n";
-		cout << " AVG List hast table time one insert = \t" << list_hash_time  << "ms\n";
+		cout << " Coockoo time insert 5k elemenst after generate table = \t" << coockoo_time  << "ms\n";
+		cout << " Open adress time insert 5k elemenst after generate table = \t" << open_adress_time << "ms\n";
+		cout << " List hast table time insert 5k elemenst after generate table = \t" << list_hash_time  << "ms\n";
 
 		//listHST.print();
 		
