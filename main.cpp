@@ -203,6 +203,8 @@ int main() {
 	static string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 	std::mt19937 gen(time(0));
 	std::normal_distribution<> dist(30, 7);
+
+	std:uniform_int_distribution<> distr(0, 250000 - 1);
 	string result;
 	result.resize(4);
 	srand(time(NULL));
@@ -213,20 +215,39 @@ int main() {
 
 
 	
-
-		int size = 50000;
-		int num_of_data = 35000;
-		hs = new TArrayHash(5, size);
+		int size = 100000;
+		int num_of_data = 50000;
+		hs = new TArrayHash(4, size);
 		string *t;
 		t = new string[num_of_data];
+
+		string *dict = new string[250000];
+		
+
+		//Загрузка словаря
+		ifstream ifs;
+		ifs.open("gauss_data_set_250K_words_2");
+		for (int i = 0; i < 250000; i++)
+		{
+			ifs >> dict[i];
+		}
+		ifs.close();
+
+
+
 		int n = floor(3 * log(size));
-		//n = 4 * size;
+		
+
+		// Теперь все тащим из нашего словаря
 		for (int i = 0; i < num_of_data; i++) {
-			t[i] = randomStrGen(10, dist, gen);
+			t[i] = dict[distr(gen)];
 		}
 
-		openAdressHashTable openAHST(35000, 2);
-		listhashTable listHST(sqrt(num_of_data) + 1, 2);
+
+
+
+		openAdressHashTable openAHST(35000, 4);
+		listhashTable listHST(sqrt(num_of_data) + 1, 4);
 		
 		DWORD st_time;
 		DWORD en_time;
