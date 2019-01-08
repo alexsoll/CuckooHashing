@@ -11,6 +11,8 @@ public:
 	Node *root;
 	int el_count;
 
+
+
 	Node *cur;
 
 	int k;
@@ -151,25 +153,19 @@ public:
 		//int pos = HashFunc(node.key) % size;	
 		
 
-
-
-
-
-
-
-
-
-
 		int pos = string_to_int(node.key);
 		pos = k_indep_funck(pos) % size;
 
-
+		
 
 		if (isFull()) return -1;
 		
 		Node cur;
 		cur = root[pos];
 		int counter = 0;
+
+		int quadro_iterator = 1; // Итератор для квадратичных проб
+
 
 		while (counter <= size) // доп защитка
 		{
@@ -182,8 +178,12 @@ public:
 			}
 			if (cur.key == was_use_key || cur.key != empety_key)
 			{
-				pos += 1;
+
+				pos = abs(pos + quadro_iterator * quadro_iterator) % p; // Используем метод квадратичных проб
+				quadro_iterator++;
 				pos %= size;
+
+
 				colission_resolving_count++;
 			}
 			cur = root[pos];
@@ -228,6 +228,9 @@ public:
 		Node el;
 		el = root[pos];
 		int counter = 0;
+
+		long int quadro_iterator = 1;
+
 		while (counter < size + 1)
 		{
 			if (el.key == st) {
@@ -237,13 +240,31 @@ public:
 			if (el.key == empety_key) return -1;
 			if (el.key == was_use_key || (el.key != empety_key && el.key != was_use_key && st != el.key))
 			{
-				pos += 1;	pos %= size;
+				pos = abs(pos + quadro_iterator * quadro_iterator) % p; //Используем метод квадратичных проб
+				quadro_iterator++;
+				pos %= size;
 				el = root[pos];
 			}
 			counter += 1;
 		}
 		cur = NULL;
 		return -1;
+
+	}
+
+	int del(string st)
+	{
+		Find(st);
+		if (cur != NULL)
+		{
+			cur->key = was_use_key;
+			el_count--;
+			return 1;
+		}
+		else
+		{
+			return - 1;
+		}
 
 	}
 

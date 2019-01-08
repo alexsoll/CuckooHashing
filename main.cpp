@@ -15,7 +15,7 @@ using namespace std;
 
 struct dict;
 
-
+void time_to_add_x_in_build_table();
 
 
 struct dict
@@ -90,93 +90,6 @@ string randomStrGen(int length, std::normal_distribution<> &uid, std::mt19937 &g
 	return result;
 }
 
-
-
-
-/*int main_2()
-{
-	srand(time(NULL));
-
-	
-
-	setlocale(LC_ALL, "Russian");
-
-	dict di;
-	di.size = 0;
-	
-
-
-	ifstream ifs("war.txt");
-
-	if (ifs) cout << "good\n";
-
-	char c;
-	int counter = 0;
-
-	while (counter < 20000)
-	{
-		string st = "";
-		c = ifs.get();
-		while (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= 'а' && c <= 'я' || c >= 'А' && c <= 'Я')
-		{
-			st += c;
-			c = ifs.get();
-			counter++;
-		}
-		if (st.length() > 0)
-		{
-			di.words.push_back(st);
-			di.size++;
-		}
-	}
-
-	List list;
-
-	cout << "war_list_size = " << di.size << "\n";
-	for (int i = 0; i < di.size; i++)
-	{
-		list.push(Node(di.words[i], 1));
-	}
-
-
-
-
-	static string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-	std::mt19937 gen(time(0));
-	std::normal_distribution<> dist(30, 7);
-	string result;
-	result.resize(4);
-
-	TArrayHash *hs;
-	int size = 10000;
-	int num_of_data = 100;
-	hs = new TArrayHash(size);
-	string *t;
-	t = new string[num_of_data];
-	int n = floor(3 * log(2000));
-
-
-
-	for (int i = 0; i < num_of_data; i++) {
-		t[i] = randomStrGen(20, dist, gen);
-		//	t[i] = "LOL";s
-	}
-
-
-	Cuckoo(t, num_of_data, n, hs);
-	volkovCuckoo(di, num_of_data, n, hs);
-	int rehash = hs->GetNumOfRehash();
-	
-	hs->printHash();
-	cout << "Number of rehash is " << rehash << " " << '\n';
-
-
-	return 0;
-}*/
-
-
-
-
 int string_to_int(string st)
 {
 
@@ -195,282 +108,396 @@ int string_to_int(string st)
 
 
 
-
+void time_to_find();
 
 
 
 int main() {
-	static string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-	std::mt19937 gen(time(0));
-	std::normal_distribution<> dist(30, 7);
-
-	std:uniform_int_distribution<> distr(0, 250000 - 1);
-	string result;
-	result.resize(4);
-	srand(time(NULL));
-	TArrayHash *hs;
-	DWORD coockoo_time;
-	DWORD open_adress_time;
-	DWORD list_hash_time;
-
-
 	
-		int size = 100000;
-		int num_of_data = 50000;
-		hs = new TArrayHash(4, size);
-		string *t;
-		t = new string[num_of_data];
-
-		string *dict = new string[250000];
-		
-
-		//Загрузка словаря
-		ifstream ifs;
-		ifs.open("gauss_data_set_250K_words_2");
-		for (int i = 0; i < 250000; i++)
-		{
-			ifs >> dict[i];
-		}
-		ifs.close();
-
-
-
-		int n = floor(3 * log(size));
-		
-
-		// Теперь все тащим из нашего словаря
-		for (int i = 0; i < num_of_data; i++) {
-			t[i] = dict[distr(gen)];
-		}
-
-
-
-
-		openAdressHashTable openAHST(35000, 4);
-		listhashTable listHST(sqrt(num_of_data) + 1, 4);
-		
-		DWORD st_time;
-		DWORD en_time;
-
-		st_time = GetTickCount();
-		for (int i = 0; i < num_of_data; i++)
-		{
-			listHST.Place(Node(t[i], -1));
-		}
-		en_time = GetTickCount();
-		list_hash_time = en_time - st_time;
-
-
-
-
-
-
-		st_time = GetTickCount();
-		for (int i = 0; i < num_of_data; i++)
-		{
-		openAHST.Place(Node(t[i], -1));
-		}
-		en_time = GetTickCount();
-		open_adress_time = en_time - st_time;
-
-
-		st_time = GetTickCount();
-		Cuckoo(t, num_of_data, n, hs);
-		en_time = GetTickCount();
-		coockoo_time = en_time - st_time;
-
-
-		int rehash = hs->GetNumOfRehash();
-				
-
-		cout << "Number of rehash is " << rehash << " " << '\n';
-		cout << "Number of string " << hs->getDataCount() << '\n';
 	
-		cout << "Collisio resolve count in open adress hash table = " << openAHST.colission_resolving_count << "\n";
-		cout << "Avereage dispersion on list HS = " << listHST.dispers() << "\n";
-		cout << "List table hash size = " << listHST.size << "\n";
-	
-		cout << "\n";
-		cout << "Coockoo time = \t" << coockoo_time << "ms\n";
-		cout << "Open adress time = \t" << open_adress_time << "ms\n";
-		cout << "List hast table time = \t" << list_hash_time << "ms\n";
-		
+	time_to_find();
 
-
-
-	
 	return 0;
 }
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* // LIST TESTING BLOCK
-list.push(Node("Lol", 1));
-list.del("Lol");
-list.printList();
-list.push(Node("Lol", 1));
-list.printList();
-list.push(Node("Lol1", 1));
-cout << "\n";
-list.printList();
-list.del("Lol");
-cout << "\n";
-list.printList();
-list.push(Node("Lol2", 1));
-list.push(Node("Lol3", 1));
-list.push(Node("Lol4", 1));
-list.push(Node("Lol5", 1));
-cout << "\n";
-list.printList();
-list.del("Lol5");
-cout << "\n";
-list.printList();
-
-list.del("Lol3");
-cout << "\n";
-list.printList();
-*/
-
-
-
-
-
-
-
-
-
-
-// Data_set_generation
-
-
-/*
-for (int i = 0; i < 50000; i++)
+void time_to_add_x_in_build_table()
 {
-string_to_int_stats[i] = 0;
+
+	static string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+	std::mt19937 gen(time(0));
+	std::normal_distribution<> dist(30, 7);
+
+
+	string result;
+	result.resize(4);
+	srand(time(NULL));
+
+
+
+	DWORD coockoo_time;
+	DWORD open_adress_time;
+	DWORD list_hash_time;
+
+
+	TArrayHash *hs;
+
+
+	// Разгеним таблицы
+	int data_count = 1000000;
+	int dict_size = 1000000;
+	int add_ins = 20000;
+
+
+	openAdressHashTable openAHST(data_count + add_ins, 5);
+	listhashTable listHST(data_count / 10, 5);
+	hs = new TArrayHash(5, data_count * 4);
+
+
+	// Загрузим данные
+	string *dict = new string[dict_size]; //  Весь словарь
+	string *dict_to_hash = new string[data_count]; // Хэшируемая часть словаря
+	ifstream ifs;
+	ifs.open("gauss_data_set_1KK_words_1");
+
+	for (int i = 0; i < dict_size; i++)
+	{
+		ifs >> dict[i];
+	}
+	// Считали данные в словарик
+
+	// Захэшируем данные в таблички
+
+	for (int i = 0; i < data_count; i++)
+	{
+		long long int index = 0;
+		index = (double(dict_size) * double(i)) / double(data_count);
+		dict_to_hash[i] = dict[index];
+	}
+	// Просто равномерно выберем данные
+
+
+	DWORD st, en;
+	cout << "ok dict build\n";
+	st = GetTickCount();
+	for (int i = 0; i < data_count; i++)
+	{
+		listHST.Place(Node(dict_to_hash[i], 0));
+	}
+	en = GetTickCount();
+	list_hash_time = en - st;
+	cout << "time build list hash = " << list_hash_time << "ms" << '\n';
+
+
+	st = GetTickCount();
+	for (int i = 0; i < data_count; i++)
+	{
+		openAHST.Place(Node(dict_to_hash[i], 0));
+	}
+	en = GetTickCount();
+	open_adress_time = en - st;
+	cout << "time build open address hash = " << open_adress_time << "ms" << '\n';
+	// Заполнили обычные хэши
+	//cout << "Ok list and open Hashing\n";
+
+
+	st = GetTickCount();
+	int n = floor(3 * log(data_count * 4));
+	Cuckoo(dict_to_hash, data_count, n, hs);
+	en = GetTickCount();
+	coockoo_time = en - st;
+	cout << "time build cuckoo hash = " << coockoo_time << "ms" << '\n';
+
+	cout << "Number of different key " << hs->getDataCount() << "\n";
+
+	// Довставляем еще 5К элементов
+
+	string word;
+
+
+
+	string *to_insert = new string[add_ins];
+
+	for (int i = 0; i < add_ins; i++)
+	{
+		int pos = rand() * rand();
+
+		pos = abs(pos) % 1000000;
+		to_insert[i] = dict[pos];
+	}
+
+
+	st = GetTickCount();
+	for (int i = 0; i < add_ins; i++)
+	{
+		hs->Place(to_insert[i], 0, 0, n);
+	}
+	en = GetTickCount();
+	coockoo_time = en - st;
+
+	cout << "Coocko time insert " << add_ins << '\t' << coockoo_time << "ms\n";
+
+
+	st = GetTickCount();
+	for (int i = 0; i < add_ins; i++)
+	{
+		listHST.Place(Node(to_insert[i], 0));
+	}
+	en = GetTickCount();
+	list_hash_time = en - st;
+
+	cout << "List time insert " << add_ins << '\t' << list_hash_time << "ms\n";
+
+
+
+	st = GetTickCount();
+	for (int i = 0; i < add_ins; i++)
+	{
+		openAHST.Place(Node(to_insert[i], 0));
+
+	}
+	en = GetTickCount();
+	open_adress_time = en - st;
+
+	cout << "Open adress time insert " << add_ins << '\t' << open_adress_time << "ms\n";
+
+
+
+
 }
 
 
 
 
-string ran;
 
-ofstream ofs;
-ofs.open("gauss_data_set_250K_words_3", 'w');
-
-
-ofstream ofs_2;
-ofs_2.open("gauss_data_set_250K_staticks_words_3", 'w');
-
-
-
-
-int counter = 0;
-int o_counter = 0;;
-
-
-while (counter < 5000)
+void time_to_del_half()
 {
-ran = randomStrGen(10, dist, gen);
-int pos = string_to_int(ran) % 50000;
-if (pos < 10000)
-{
-ofs << ran << " ";
-string_to_int_stats[pos]++;
-counter++;
+	static string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+	std::mt19937 gen(time(0));
+	std::normal_distribution<> dist(30, 7);
+
+
+	string result;
+	result.resize(4);
+	srand(time(NULL));
+
+	DWORD coockoo_time;
+	DWORD open_adress_time;
+	DWORD list_hash_time;
+
+
+	TArrayHash *hs;
+
+
+	// Разгеним таблицы
+	int data_count = 635000;
+	int dict_size = 1000000;
+
+	openAdressHashTable openAHST(data_count, 5);
+	listhashTable listHST(sqrt(data_count), 5);
+	hs = new TArrayHash(5, data_count * 4);
+
+
+	// Загрузим данные
+	string *dict = new string[dict_size]; //  Весь словарь
+	string *dict_to_hash = new string[data_count]; // Хэшируемая часть словаря
+	ifstream ifs;
+	ifs.open("gauss_data_set_1KK_words_1");
+
+	for (int i = 0; i < dict_size; i++)
+	{
+		ifs >> dict[i];
+	}
+	// Считали данные в словарик
+
+	// Захэшируем данные в таблички
+
+	for (int i = 0; i < data_count; i++)
+	{
+		long long int index = 0;
+		index = (double(dict_size) * double(i)) / double(data_count);
+		dict_to_hash[i] = dict[index];
+	}
+	// Просто равномерно выберем данные
+
+	cout << "ok dict build\n";
+
+	for (int i = 0; i < data_count; i++)
+	{
+		listHST.Place(Node(dict_to_hash[i], 0));
+		openAHST.Place(Node(dict_to_hash[i], 0));
+	}
+	// Заполнили обычные хэши
+	cout << "Ok list and open Hashing\n";
+
+
+
+
+	int n = floor(3 * log(data_count * 4));
+	Cuckoo(dict_to_hash, data_count, n, hs);
+
+	cout << hs->getDataCount() << "\n";
+
+
+
+	DWORD st, en;
+	// Попробуем удалить из словаря четверть слов
+
+
+
+	//	DWORD st, en;
+
+	//Замутим удаление половины словаря
+	st = GetTickCount();
+	for (int i = 0; i < data_count;)
+	{
+		hs->Delete(dict_to_hash[i]);
+		i += 2;
+	}
+	en = GetTickCount();
+	coockoo_time = en - st;
+
+	cout << "Coocko time = \t" << coockoo_time << "ms\n";
+
+
+	st = GetTickCount();
+	for (int i = 0; i < data_count;)
+	{
+		listHST.del(dict_to_hash[i]);
+		i += 2;
+	}
+	en = GetTickCount();
+	list_hash_time = en - st;
+
+	cout << "List time  = \t" << list_hash_time << "ms\n";
+
+
+
+	st = GetTickCount();
+	for (int i = 0; i < data_count;)
+	{
+		openAHST.del(dict_to_hash[i]);
+		i += 2;
+	}
+	en = GetTickCount();
+	open_adress_time = en - st;
+
+	cout << "Open adress time = \t" << open_adress_time << "ms\n";
+
+
 }
 
-}
-cout << "10K gen" << "\n";
-counter = 0;
 
 
 
-while (counter < 20000)
+
+void time_to_find()
 {
-ran = randomStrGen(10, dist, gen);
-int pos = string_to_int(ran) % 50000;
-if (pos > 10000 && pos < 15000)
-{
-ofs << ran << " ";
-string_to_int_stats[pos]++;
-counter++;
-}
+	static string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+	std::mt19937 gen(time(0));
+	std::normal_distribution<> dist(30, 7);
+
+
+	string result;
+	result.resize(4);
+	srand(time(NULL));
+
+	DWORD coockoo_time;
+	DWORD open_adress_time;
+	DWORD list_hash_time;
+
+
+	TArrayHash *hs;
+
+
+	// Разгеним таблицы
+	int data_count = 10000;
+	int dict_size = 1000000;
+
+	openAdressHashTable openAHST(data_count, 5);
+	listhashTable listHST(sqrt(data_count), 5);
+	hs = new TArrayHash(5, data_count * 4);
+
+
+	// Загрузим данные
+	string *dict = new string[dict_size]; //  Весь словарь
+	string *dict_to_hash = new string[data_count]; // Хэшируемая часть словаря
+	ifstream ifs;
+	ifs.open("gauss_data_set_1KK_words_1");
+
+	for (int i = 0; i < dict_size; i++)
+	{
+		ifs >> dict[i];
+	}
+	// Считали данные в словарик
+
+	// Захэшируем данные в таблички
+
+	for (int i = 0; i < data_count; i++)
+	{
+		long long int index = 0;
+		index = (double(dict_size) * double(i)) / double(data_count);
+		dict_to_hash[i] = dict[index];
+	}
+	// Просто равномерно выберем данные
+
+	cout << "ok dict build\n";
+
+	for (int i = 0; i < data_count; i++)
+	{
+		listHST.Place(Node(dict_to_hash[i], 0));
+		openAHST.Place(Node(dict_to_hash[i], 0));
+	}
+	// Заполнили обычные хэши
+	cout << "Ok list and open Hashing\n";
+
+
+
+
+	int n = floor(3 * log(data_count * 4));
+	Cuckoo(dict_to_hash, data_count, n, hs);
+
+	cout << hs->getDataCount() << "\n";
+
+
+
+	DWORD st, en;
+
+	//Замутим поиски всего словаря
+	st = GetTickCount();
+	for (int i = 0; i < data_count; i++)
+	{
+		hs->Find(dict_to_hash[i]);
+	}
+	en = GetTickCount();
+	coockoo_time = en - st;
+
+	cout << "Coocko time = \t" << coockoo_time << "ms\n";
+
+
+	st = GetTickCount();
+	for (int i = 0; i < data_count; i++)
+	{
+		listHST.Find(dict_to_hash[i]);
+	}
+	en = GetTickCount();
+	list_hash_time = en - st;
+
+	cout << "List time  = \t" << list_hash_time << "ms\n";
+
+	st = GetTickCount();
+	for (int i = 0; i < data_count; i++)
+	{
+		//openAHST.Find(dict_to_hash[i]);
+	
+			openAHST.Find(dict_to_hash[i]);
+	}
+	en = GetTickCount();
+	open_adress_time = en - st;
+
+	cout << "Open adress time = \t" << open_adress_time << "ms\n";
+
+	cout << "Ok hashing\n";
 
 }
-cout << "10-15K gen" << "\n";
-counter = 0;
-
-
-
-while (counter < 200000)
-{
-ran = randomStrGen(10, dist, gen);
-int pos = string_to_int(ran) % 50000;
-if (pos > 15000 && pos < 35000)
-{
-ofs << ran << " ";
-string_to_int_stats[pos]++;
-counter++;
-}
-
-}
-cout << "15-35K gen" << "\n";
-counter = 0;
-
-
-while (counter < 20000)
-{
-ran = randomStrGen(10, dist, gen);
-int pos = string_to_int(ran) % 50000;
-if (pos > 35000 && pos < 40000)
-{
-ofs << ran << " ";
-string_to_int_stats[pos]++;
-counter++;
-}
-
-}
-cout << "35-40KK gen" << "\n";
-counter = 0;
-
-while (counter < 5000)
-{
-ran = randomStrGen(10, dist, gen);
-int pos = string_to_int(ran) % 50000;
-if (pos > 40000 && pos < 50000)
-{
-ofs << ran << " ";
-string_to_int_stats[pos]++;
-counter++;
-}
-
-}
-cout << "40-50K gen" << "\n";
-counter = 0;
-
-
-
-
-for (int i = 0; i < 50000; i++)
-ofs_2 << string_to_int_stats[i] << "\r\n";
-
-ofs.close();
-ofs_2.close();
-
-
-
-*/
