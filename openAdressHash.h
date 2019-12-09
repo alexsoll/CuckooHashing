@@ -10,9 +10,15 @@ public:
 	int size;
 	Node *root;
 	int el_count;
-	int *k_indep_hash_func;
-	int p;
+
+
+
+	Node *cur;
+
 	int k;
+	int p;
+	int *k_indep_arr;
+
 
 	string empety_key = "";
 	string was_use_key = "\n\r";
@@ -21,41 +27,50 @@ public:
 
 	int HashFunc(string key)
 	{
-		long long int pos = 0;
-		const int prime_number = 67;
-		long long int res = 0, p_pow = 1;
-		/*int hash_pos = 0;
+		int hash_pos = 0;
 		for (int i = 0; i < key.length(); i++)
 		{
 			hash_pos += key[i] * mypoww(67, i);			
 		}
 
-		return abs(hash_pos);*/
+		return abs(hash_pos);
+	}
 
-		for (int i = 0; i < key.length(); i++) {
-			pos += abs(key[i] - 'a' + 1) * p_pow;
-			p_pow *= prime_number;
-		}
+	int k_indep_funck(int hs)
+	{
+		
+		int res = 0;
 		for (int i = 0; i < k; i++) {
-			res += k_indep_hash_func[i] * mypoww(pos, k - i - 1);
+			res += k_indep_arr[i] * mypoww(hs, k - i - 1);
 		}
 		res = abs(((res % p) % size));
+
 		return res;
 	}
+
+
+
+
+
+
+	bool IsPrime(int num) {
+		for (int i = 2; i <= sqrt(num) + 1; i++)
+			if (num%i == 0)
+				return false;
+		return true;
+	}
+
 
 	// Конструктор
 	openAdressHashTable(int _size, int _k)
 	{
-		size = _size;
-		colission_resolving_count = 0;
-		if (size <= 0) throw - 1;
-		
-		el_count = 0;
 
-		///// Add k-independent Hash Function /////
 		k = _k;
-		k_indep_hash_func = new int[k];
-		p = size;
+
+		k_indep_arr = new int[k];
+
+		p = _size;
+		
 		while (true) {
 			if (IsPrime(p) == true)
 				break;
@@ -63,12 +78,27 @@ public:
 				p++;
 		}
 
-		k_indep_hash_func[0] = (rand() % p) + 1;
+		k_indep_arr[0] = (rand() % p) + 1;
+	
 		for (int i = 1; i < k; i++) {
-			k_indep_hash_func[i] = rand() % p;
+			k_indep_arr[i] = rand() % p;
 		}
 
-		///////////////////////////////////////
+
+
+
+
+
+
+
+
+
+		size = _size;
+		colission_resolving_count = 0;
+		if (size <= 0) throw - 1;
+		cur = NULL;
+		el_count = 0;
+
 
 		root = new Node[size];
 		for (int i = 0; i < size; i++)
@@ -78,16 +108,11 @@ public:
 		}
 	}
 
+
+	// Деструктор
 	~openAdressHashTable()
 	{
 		delete[] root;		
-	}
-
-	bool IsPrime(int num) {
-		for (int i = 2; i <= sqrt(num) + 1; i++)
-			if (num%i == 0)
-				return false;
-		return true;
 	}
 
 	long long int mypoww(long long int a, long long int b) {
@@ -98,9 +123,39 @@ public:
 		return res;
 	}
 
+
+
+	int string_to_int(string st)
+	{
+
+		int pos = 0;
+		int prime = 67;
+		int pow = 1;
+		for (int i = 0; i < st.length(); i++)
+		{
+			pos += st[i] * pow;
+			pow *= prime;
+		}
+		pos = abs(pos);
+		return pos;
+	}
+
+
+
+
+
+
+
+
+	// Вставка
 	int Place(Node node)
 	{
-		int pos = HashFunc(node.key);	
+		//int pos = HashFunc(node.key) % size;	
+		
+
+		int pos = string_to_int(node.key);
+		pos = k_indep_funck(pos) % size;
+
 		
 
 		if (isFull()) return -1;
@@ -108,6 +163,9 @@ public:
 		Node cur;
 		cur = root[pos];
 		int counter = 0;
+
+		int quadro_iterator = 1; // Итератор для квадратичных проб
+
 
 		while (counter <= size) // доп защитка
 		{
@@ -120,8 +178,12 @@ public:
 			}
 			if (cur.key == was_use_key || cur.key != empety_key)
 			{
-				pos += 1;
+
+				pos = abs(pos + quadro_iterator * quadro_iterator) % p; // Используем метод квадратичных проб
+				quadro_iterator++;
 				pos %= size;
+
+
 				colission_resolving_count++;
 			}
 			cur = root[pos];
@@ -155,13 +217,56 @@ public:
 				cout << root[i].val;
 				cout << " |\n";				
 			}
-
-
-		}
-	
+		}	
 	}
 
+	int Find(string st)
+	{
+		
+		int pos = string_to_int(st);
+		pos = k_indep_funck(pos) % size;
+		Node el;
+		el = root[pos];
+		int counter = 0;
 
+		long int quadro_iterator = 1;
+
+		while (counter < size + 1)
+		{
+			if (el.key == st) {
+				cur = &el;
+				return pos;
+			}
+			if (el.key == empety_key) return -1;
+			if (el.key == was_use_key || (el.key != empety_key && el.key != was_use_key && st != el.key))
+			{
+				pos = abs(pos + quadro_iterator * quadro_iterator) % p; //Используем метод квадратичных проб
+				quadro_iterator++;
+				pos %= size;
+				el = root[pos];
+			}
+			counter += 1;
+		}
+		cur = NULL;
+		return -1;
+
+	}
+
+	int del(string st)
+	{
+		Find(st);
+		if (cur != NULL)
+		{
+			cur->key = was_use_key;
+			el_count--;
+			return 1;
+		}
+		else
+		{
+			return - 1;
+		}
+
+	}
 
 };
 

@@ -43,8 +43,11 @@ protected:
 			}
 				//pos += abs(st[i] * exp((i + 1)));
 				//pos += abs(st[i] * (i+1));
+			p_pow = 1;
 			for (int i = 0; i < k; i++) {
-				res += k_indep1[i] * mypoww(pos, k - i - 1);
+				//res += k_indep1[i] * mypoww(pos, k - i - 1);
+				res += k_indep1[k - i - 1] * p_pow;
+				p_pow *= pos; 
 			}
 			res = abs(((res % _p) % maxsize));
 			break;
@@ -56,7 +59,9 @@ protected:
 				//pos += abs(st[i] * exp((i + 1)));
 				//pos += abs(st[i] * (i + 1));
 			for (int i = 0; i < k; i++) {
-				res += k_indep2[i] * mypoww(pos, k - i - 1);
+				//res += k_indep2[i] * mypoww(pos, k - i - 1);
+				res += k_indep2[k - i - 1] * p_pow;
+				p_pow *= pos;
 			}
 			res = abs(((res % _p) % maxsize));
 			break;
@@ -140,8 +145,8 @@ public:
 	}
 
 	~TArrayHash() {
+		delete[] arr[0];
 		delete[] arr[1];
-		delete[] arr[2];
 		delete[] arr;
 		delete[] k_indep_hash_func1;
 		delete[] k_indep_hash_func2;
@@ -163,8 +168,8 @@ public:
 
 	void rehash() {
 		DataCount = 0;
-		//delete[] arr[1];
-		//delete[] arr[2];
+		delete[] arr[0];
+		delete[] arr[1];
 		delete[] arr;
 
 
